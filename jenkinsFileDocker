@@ -55,7 +55,7 @@ pipeline {
                      * Reuse the workspace on the agent defined at top-level of
                      * Pipeline but run inside a container.
                      */
-                    image 'maven:3.6-jdk-8'
+                    image 'maven:3.5.2-jdk-9'
                     reuseNode true
                 }
             }
@@ -81,6 +81,7 @@ pipeline {
              steps {
                script {
                 sh '''
+                    docker version
                     docker build -t ${IMAGE} .
                     docker tag ${IMAGE} ${IMAGE}:${VERSION}
                     docker push ${IMAGE}:${VERSION}
