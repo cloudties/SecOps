@@ -40,8 +40,8 @@ pipeline {
                         submoduleCfg: [], 
                         userRemoteConfigs: [
                             [
-                                credentialsId: 'info@cloudties.in',
-                                url: 'https://github.com/cloudties/Automation.git']
+                                credentialsId: 'cloudties',
+                                url: 'https://github.com/jenkins-docs/simple-java-maven-app.git']
                             ]
                         ])
                         }}
