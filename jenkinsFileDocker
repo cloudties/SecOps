@@ -1,0 +1,84 @@
+pipeline {
+
+    /*
+     * Run everything on an existing agent configured with a label 'docker'.
+     * This agent will need docker, git and a jdk installed at a minimum.
+     */
+    agent {
+        node {
+            label 'docker'
+        }
+    }
+
+    // using the Timestamper plugin we can add timestamps to the console log
+    options {
+        timestamps()
+    }
+
+    environment {
+        //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
+        IMAGE = readMavenPom().getArtifactId()
+        VERSION = readMavenPom().getVersion()
+    }
+    
+    stages {
+
+        stage('Clone repository') {
+            /* 
+             * Let's make sure we have the repository cloned to our workspace 
+             */
+            checkout(
+                    [
+                        $class: 'GitSCM',
+                        branches: [
+                            [name: '*/master']
+                        ],
+                        doGenerateSubmoduleConfigurations: false, 
+                        extensions: [], 
+                        submoduleCfg: [], 
+                        userRemoteConfigs: [
+                            [
+                                credentialsId: '<cred-id>',
+                                url: '<github-url>']
+                            ]
+                        ])
+        }
+
+        stage('Maven build') {
+            agent {
+                docker {
+                    /*
+                     * Reuse the workspace on the agent defined at top-level of
+                     * Pipeline but run inside a container.
+                     */
+                    image 'maven:3.6-jdk-8'
+                    reuseNode true
+                }
+            }
+            steps {        
+                sh '''
+                    set -eux pipefail
+                    mvn -e clean install
+                '''
+            }
+            post {
+                success {
+                /* 
+                 * Only worry about archiving the jar file 
+                 * if the build steps are successful (this part may be not necessary)
+                 */
+                archiveArtifacts(artifacts: '**/target/*.jar', allowEmptyArchive: true)
+                }
+           }
+        }
+        stage('Build docker image') {
+             steps {
+                sh '''
+                    docker build -t ${IMAGE} .
+                    docker tag ${IMAGE} ${IMAGE}:${VERSION}
+                    docker push ${IMAGE}:${VERSION}
+                '''
+            }
+        }
+    }
+}
