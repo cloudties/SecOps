@@ -27,6 +27,8 @@ pipeline {
             /* 
              * Let's make sure we have the repository cloned to our workspace 
              */
+              steps {
+		       script {
             checkout(
                     [
                         $class: 'GitSCM',
@@ -42,6 +44,7 @@ pipeline {
                                 url: '<github-url>']
                             ]
                         ])
+                        }}
         }
 
         stage('Maven build') {
@@ -55,11 +58,13 @@ pipeline {
                     reuseNode true
                 }
             }
-            steps {        
+            steps {    
+              script {
                 sh '''
                     set -eux pipefail
                     mvn -e clean install
                 '''
+                }
             }
             post {
                 success {
@@ -73,11 +78,13 @@ pipeline {
         }
         stage('Build docker image') {
              steps {
+               script {
                 sh '''
                     docker build -t ${IMAGE} .
                     docker tag ${IMAGE} ${IMAGE}:${VERSION}
                     docker push ${IMAGE}:${VERSION}
                 '''
+                }
             }
         }
     }
