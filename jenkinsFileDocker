@@ -54,7 +54,7 @@ pipeline {
                      * Reuse the workspace on the agent defined at top-level of
                      * Pipeline but run inside a container.
                      */
-                    image 'maven:3.6-jdk-8'
+                    image '3.6.3-jdk-8'
                     reuseNode true
                 }
             }
@@ -62,7 +62,7 @@ pipeline {
               script {
                 sh '''
                     set -eux pipefail
-                    mvn -e clean install
+                    mvn -e clean compile
                 '''
                 }
             }
