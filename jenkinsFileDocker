@@ -40,8 +40,8 @@ pipeline {
                         submoduleCfg: [], 
                         userRemoteConfigs: [
                             [
-                                credentialsId: '<cred-id>',
-                                url: '<github-url>']
+                                credentialsId: 'info@cloudties.in',
+                                url: 'https://github.com/cloudties/Automation.git']
                             ]
                         ])
                         }}
