@@ -41,7 +41,7 @@ pipeline {
                         userRemoteConfigs: [
                             [
                                 credentialsId: 'cloudties',
-                                url: 'https://github.com/jenkins-docs/simple-java-maven-app.git']
+                                url: 'https://github.com/jabedhasan21/java-hello-world-with-maven.git']
                             ]
                         ])
                         }}
