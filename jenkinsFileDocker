@@ -18,7 +18,8 @@ pipeline {
     environment {
         //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
         IMAGE = 'hello-world'
-        VERSION = readMavenPom().getVersion()
+        //VERSION = readMavenPom().getVersion()
+        VERSION = '2.2.2'
     }
     
     stages {
@@ -88,4 +89,4 @@ pipeline {
             }
         }
     }
-}
+}	
