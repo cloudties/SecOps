@@ -62,7 +62,7 @@ pipeline {
               script {
                 sh '''
                     set -eux pipefail
-                    mvn -e clean compile
+                    mvn -e clean install
                 '''
                 }
             }
