@@ -99,18 +99,17 @@ pipeline {
         stage('Run Python app') {
 		/*
 		* Run application using Docker image
-		* sh "DB=`docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db`"
-		* sh "docker run -e DB_URI=$DB ${IMAGE}:${VERSION} /bin/bash"
+		* sh "CONTAINERID=` docker ps -aqf "name=sn1per`"
+		* sh "docker run -e $CONTAINERID ${IMAGE}:${VERSION} /bin/bash"
 		*/
             agent {
                label 'master'
             }
             steps {    
               script {
-                sh '''
-                    docker container ls
-   	            docker exec -it ${IMAGE}  sh -c "sniper -t https://www.cloudties.in"
-   	           '''
+		sh "CONTAINERID=` docker ps -aqf "name=sn1per`"
+		sh "echo $CONTAINERID"
+		sh "docker exec -it $CONTAINERID  sh -c `sniper -t https://www.cloudties.in`"
                 }
             }
         }
