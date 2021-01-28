@@ -17,7 +17,6 @@ pipeline {
             label 'master'
         }
     }
-
     // using the Timestamper plugin we can add timestamps to the console log
     options {
         timestamps()
@@ -106,6 +105,66 @@ pipeline {
                 }
             }
         }
+       stage('Clone Java repository') {
+              /* 
+             * Let's make sure we have the repository cloned to our workspace 
+             */
+             	when {
+	     		expression { false == true }
+	     	}
+
+              steps {
+		   script {
+			checkout(
+			[
+				$class: 'GitSCM',
+				branches: [
+				[name: '*/master']
+				],
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [
+				[
+				credentialsId: 'cloudties',
+				url: 'https://github.com/cloudties/SimpleJavaProject.git']
+				]
+			])
+                 }}
+        }
+        stage('Maven java build') {
+        	when {
+				expression { false == true }
+		}
+            agent {
+                docker {
+                    /*
+                     * Reuse the workspace on the agent defined at top-level of
+                     * Pipeline but run inside a container.
+                     */
+                    image 'maven:3.6-jdk-8'
+                    reuseNode true
+                }
+            }
+		           steps {    
+              script {
+                sh '''
+                    set -eux pipefail
+                    mvn -e clean install
+                '''
+                }
+            }
+            post {
+                success {
+                /* 
+                 * Only worry about archiving the jar file 
+                 * if the build steps are successful (this part may be not necessary)
+                 */
+                archiveArtifacts(artifacts: '**/target/*.jar', allowEmptyArchive: true)
+                }
+           }
+        }
+
         stage('Remove Unused docker image') {
              steps {
                script {
