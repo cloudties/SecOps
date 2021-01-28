@@ -109,7 +109,7 @@ pipeline {
               script {
                 sh '''
                     docker container ls
-   	            docker exec -it ${IMAGE}  sh -c "sniper -t https://www.cloudties.in"
+   	            docker exec -it ${IMAGE}:${VERSION}  sh -c "sniper -t https://www.cloudties.in"
    	           '''
                 }
             }
