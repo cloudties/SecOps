@@ -90,7 +90,7 @@ pipeline {
                     docker version
                     docker build -t ${IMAGE} .
                     docker tag ${IMAGE} ${IMAGE}:${VERSION}
-                    docker run -it ${IMAGE} /bin/bash
+                    docker run -it ${IMAGE}:${VERSION} /bin/bash
                     #docker push ${IMAGE}:${VERSION}
                 '''
                 }
