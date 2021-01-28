@@ -8,6 +8,9 @@ pipeline {
 	* start docker demon
 	* "chmod 666 /var/run/docker.sock"
 	*/
+	/*
+	* https://xerosecurity.com/wordpress/documentation/
+	*/
 
     agent {
         node {
@@ -98,10 +101,9 @@ pipeline {
             }
             steps {    
               script {
-                sh '''
-                    set -eux pipefail
-                    sh 'sniper -t localhost'
-                '''
+              sh '''
+                    docker run -it ${IMAGE} /bin/bash
+                 '''
                 }
             }
         }
