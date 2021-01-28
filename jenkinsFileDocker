@@ -1,10 +1,14 @@
 pipeline {
 
-    /*
-     * Run everything on an existing agent configured with a label 'docker'.
-     * This agent will need docker, git and a jdk installed at a minimum.
-     * https://stackoverflow.com/questions/26472586/upgrade-docker-on-centos-7
-     */
+	/*
+	* Run everything on an existing agent configured with a label 'docker'.
+	* This agent will need docker, git and a jdk installed at a minimum.
+	* https://stackoverflow.com/questions/26472586/upgrade-docker-on-centos-7
+	* install latest docker
+	* start docker demon
+	* "chmod 666 /var/run/docker.sock"
+	*/
+
     agent {
         node {
             label 'master'
@@ -77,6 +81,11 @@ pipeline {
             }
         }
         stage('Run Python app') {
+		/*
+		* Run application using Docker image
+		* sh "DB=`docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db`"
+		* sh "docker run -e DB_URI=$DB ${IMAGE}:${VERSION} /bin/bash"
+		*/
             agent {
                 docker {
                     /*
@@ -106,7 +115,6 @@ pipeline {
 
               steps {
 		   script {
-		   	/*sh "chmod 666 /var/run/docker.sock"*/
 			checkout(
 			[
 				$class: 'GitSCM',
