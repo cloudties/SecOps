@@ -152,8 +152,8 @@ pipeline {
         stage('Remove Unused docker image') {
              steps {
                script {
-			#sh "docker rmi ${IMAGE}:${VERSION}"
-			#sh "docker rmi ${IMAGE}:latest"
+			//sh "docker rmi ${IMAGE}:${VERSION}"
+			//sh "docker rmi ${IMAGE}:latest"
 			sh "docker image ls"
                 }
             }
