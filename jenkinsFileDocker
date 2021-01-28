@@ -102,7 +102,7 @@ pipeline {
             steps {    
               script {
               sh '''
-                    sniper https://www.cloudties.in
+                    sn1per https://www.cloudties.in
                  '''
                 }
             }
