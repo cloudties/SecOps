@@ -53,7 +53,7 @@ pipeline {
 			])
                  }}
         }
-        stage('Pythom build') {
+        stage('Python build') {
             agent {
                 docker {
                     /*
@@ -71,7 +71,27 @@ pipeline {
               script {
                 sh '''
                     set -eux pipefail
-                    mvn -e clean install
+                    sh 'pip3 install -r requirements.txt'
+                '''
+                }
+            }
+        }
+        stage('Run Python app') {
+            agent {
+                docker {
+                    /*
+                     * Reuse the workspace on the agent defined at top-level of
+                     * Pipeline but run inside a container.
+                     */
+                    image 'kalilinux/kali-rolling'
+                    reuseNode true
+                }
+            }
+            steps {    
+              script {
+                sh '''
+                    set -eux pipefail
+                    sh 'sniper -t localhost'
                 '''
                 }
             }
