@@ -108,8 +108,7 @@ pipeline {
             steps {    
               script {
 		sh "CONTAINERID=`docker ps -aqf name=sn1per`"
-		sh "echo $CONTAINERID"
-		sh "docker exec -it $CONTAINERID  sh -c `sniper -t https://www.cloudties.in`"
+		sh "docker exec -it CID=$CONTAINERID  sh -c `sniper -t https://www.cloudties.in`"
                 }
             }
         }
