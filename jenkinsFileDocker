@@ -91,7 +91,7 @@ pipeline {
 			docker build -t ${IMAGE} .
 			docker tag ${IMAGE} ${IMAGE}:${VERSION}
 			docker run -d ${IMAGE}:${VERSION} /bin/bash
-			CONTAINERID = sh ( script: 'docker ps -aqf name=sn1per',returnStdout: true).trim()
+			CONTAINERID =(docker ps -aqf name=sn1per)
 			docker exec -it $CONTAINERID sh -c 'sniper -t https://www.cloudties.in'
 			#docker push ${IMAGE}:${VERSION}
                 '''
