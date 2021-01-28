@@ -90,7 +90,7 @@ pipeline {
                     docker version
                     docker build -t ${IMAGE} .
                     docker tag ${IMAGE} ${IMAGE}:${VERSION}
-                    docker run -d  --name sn1percontainer ${IMAGE}:${VERSION} /bin/bash
+                    docker run -d ${IMAGE}:${VERSION} /bin/bash
                     #docker push ${IMAGE}:${VERSION}
                 '''
                 }
