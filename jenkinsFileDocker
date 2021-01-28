@@ -14,8 +14,8 @@ pipeline {
     // using the Timestamper plugin we can add timestamps to the console log
     options {
         timestamps()
+        disableConcurrentBuilds()
     }
-
     environment {
         //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
         IMAGE = 'simplejavaproject'
@@ -35,6 +35,7 @@ pipeline {
              */
               steps {
 		   script {
+		   	sh "chmod 666 /var/run/docker.sock"
 			checkout(
 			[
 				$class: 'GitSCM',
