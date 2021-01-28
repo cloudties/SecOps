@@ -87,31 +87,25 @@ pipeline {
              steps {
                script {
                 sh '''
-                    docker version
-                    docker build -t ${IMAGE} .
-                    docker tag ${IMAGE} ${IMAGE}:${VERSION}
-                    docker run -d ${IMAGE}:${VERSION} /bin/bash
-                    #docker push ${IMAGE}:${VERSION}
+			docker version
+			docker build -t ${IMAGE} .
+			docker tag ${IMAGE} ${IMAGE}:${VERSION}
+			docker run -d ${IMAGE}:${VERSION} /bin/bash
+			CONTAINERID = sh ( script: 'docker ps -aqf name=sn1per',returnStdout: true).trim()
+			docker exec -it $CONTAINERID sh -c 'sniper -t https://www.cloudties.in'
+			#docker push ${IMAGE}:${VERSION}
                 '''
                 }
             }
         }
         stage('Run Python app') {
-		/*
-		* Run application using Docker image
-		* sh "CONTAINERID=` docker ps -aqf "name=sn1per`"
-		* sh "docker run -e $CONTAINERID ${IMAGE}:${VERSION} /bin/bash"
-		*/
             agent {
                label 'master'
             }
-
- 
-
             steps {    
               script {
 		CONTAINERID = sh ( script: 'docker ps -aqf name=sn1per',returnStdout: true).trim()
-		sh "docker exec -it $CONTAINERID  sh -c `sniper -t https://www.cloudties.in`"
+		sh "docker exec -it $CONTAINERID sh -c 'sniper -t https://www.cloudties.in'"
                 }
             }
         }
