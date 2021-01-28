@@ -89,7 +89,7 @@ pipeline {
                     docker version
                     docker build -t ${IMAGE} .
                     docker tag ${IMAGE} ${IMAGE}:${VERSION}
-                    /*docker push ${IMAGE}:${VERSION}*/
+                    #docker push ${IMAGE}:${VERSION}
                 '''
                 }
             }
