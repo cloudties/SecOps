@@ -21,6 +21,10 @@ pipeline {
         IMAGE = 'simplejavaproject'
         //VERSION = readMavenPom().getVersion()
         VERSION = '2.2.2'
+	//registry = "myreg/docker-test"
+	//imagename = "cloudties/dockerimage"
+	//registryCredential = 'cloudties123$'
+	//dockerImage = ''
     }
     
     stages {
@@ -30,25 +34,24 @@ pipeline {
              * Let's make sure we have the repository cloned to our workspace 
              */
               steps {
-		       script {
-            checkout(
-                    [
-                        $class: 'GitSCM',
-                        branches: [
-                            [name: '*/master']
-                        ],
-                        doGenerateSubmoduleConfigurations: false, 
-                        extensions: [], 
-                        submoduleCfg: [], 
-                        userRemoteConfigs: [
-                            [
-                                credentialsId: 'cloudties',
-                                url: 'https://github.com/cloudties/SimpleJavaProject.git']
-                            ]
-                        ])
-                        }}
+		   script {
+			checkout(
+			[
+				$class: 'GitSCM',
+				branches: [
+				[name: '*/master']
+				],
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [
+				[
+				credentialsId: 'cloudties',
+				url: 'https://github.com/cloudties/SimpleJavaProject.git']
+				]
+			])
+                 }}
         }
-
         stage('Maven build') {
             agent {
                 docker {
@@ -85,8 +88,16 @@ pipeline {
                     docker version
                     docker build -t ${IMAGE} .
                     docker tag ${IMAGE} ${IMAGE}:${VERSION}
-                    docker push ${IMAGE}:${VERSION}
+                    /*docker push ${IMAGE}:${VERSION}*/
                 '''
+                }
+            }
+        }
+        stage('Remove Unused docker image') {
+             steps {
+               script {
+			sh "docker rmi ${IMAGE}:${VERSION}"
+			sh "docker rmi ${IMAGE}:latest"
                 }
             }
         }
