@@ -90,18 +90,13 @@ pipeline {
 		* sh "docker run -e DB_URI=$DB ${IMAGE}:${VERSION} /bin/bash"
 		*/
             agent {
-                docker {
-                    /*
-                     * Reuse the workspace on the agent defined at top-level of
-                     * Pipeline but run inside a container.
-                     */
-                    image 'kalilinux/kali-rolling'
-                    reuseNode true
-                }
+               label 'master'
             }
             steps {    
               script {
+                sh '''
    	            docker exec  -it ${IMAGE}  sh -c "sniper -t https://www.cloudties.in"
+   	           '''
                 }
             }
         }
