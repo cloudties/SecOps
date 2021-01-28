@@ -105,9 +105,12 @@ pipeline {
             agent {
                label 'master'
             }
+
+ 
+
             steps {    
               script {
-		sh "CONTAINERID=`docker ps -aqf name=sn1per`"
+		CONTAINERID = sh ( script: 'docker ps -aqf name=sn1per',returnStdout: true).trim()
 		sh "docker exec -it CID=$CONTAINERID  sh -c `sniper -t https://www.cloudties.in`"
                 }
             }
