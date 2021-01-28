@@ -101,10 +101,7 @@ pipeline {
             }
             steps {    
               script {
-              sh '''
-             	    docker  run -it   sn1per /bin/bash
-                    sniper -t https://www.cloudties.in
-                 '''
+  	            docker exec ${IMAGE} /bin/bash -c "sniper -t https://www.cloudties.in"
                 }
             }
         }
