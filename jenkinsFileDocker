@@ -105,6 +105,9 @@ pipeline {
                  }}
         }
         stage('Maven build') {
+        	when {
+				expression { false == true }
+		}
             agent {
                 docker {
                     /*
@@ -115,10 +118,7 @@ pipeline {
                     reuseNode true
                 }
             }
-		when {
-			expression { false == true }
-		}
-            steps {    
+		           steps {    
               script {
                 sh '''
                     set -eux pipefail
@@ -152,8 +152,9 @@ pipeline {
         stage('Remove Unused docker image') {
              steps {
                script {
-			sh "docker rmi ${IMAGE}:${VERSION}"
-			sh "docker rmi ${IMAGE}:latest"
+			#sh "docker rmi ${IMAGE}:${VERSION}"
+			#sh "docker rmi ${IMAGE}:latest"
+			sh "docker image ls"
                 }
             }
         }
