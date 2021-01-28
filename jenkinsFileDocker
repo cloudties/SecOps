@@ -18,9 +18,14 @@ pipeline {
     }
     environment {
         //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
-        IMAGE = 'simplejavaproject'
+        IMAGE = 'sn1per'
+        VERSION = '1'
+        
+        //Use Pipeline Utility Steps for python env variables
+        //IMAGE = 'simplejavaproject'
         //VERSION = readMavenPom().getVersion()
-        VERSION = '2.2.2'
+        //VERSION = '2.2.2'
+        
 	//registry = "myreg/docker-test"
 	//imagename = "cloudties/dockerimage"
 	//registryCredential = 'cloudties123$'
@@ -28,11 +33,57 @@ pipeline {
     }
     
     stages {
-
-        stage('Clone repository') {
-            /* 
+        stage('Clone Python repository') {
+              steps {
+		   script {
+			checkout(
+			[
+				$class: 'GitSCM',
+				branches: [
+				[name: '*/master']
+				],
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [
+				[
+				credentialsId: 'cloudties',
+				url: 'https://github.com/1N3/Sn1per.git']
+				]
+			])
+                 }}
+        }
+        stage('Pythom build') {
+            agent {
+                docker {
+                    /*
+                     * Reuse the workspace on the agent defined at top-level of
+                     * Pipeline but run inside a container.
+                     */
+                    image 'kalilinux/kali-rolling'
+                    reuseNode true
+                }
+            }
+		when {
+			expression { false == true }
+		}
+            steps {    
+              script {
+                sh '''
+                    set -eux pipefail
+                    mvn -e clean install
+                '''
+                }
+            }
+        }
+        stage('Clone Java repository') {
+              /* 
              * Let's make sure we have the repository cloned to our workspace 
              */
+             	when {
+	     		expression { false == true }
+	     	}
+
               steps {
 		   script {
 		   	/*sh "chmod 666 /var/run/docker.sock"*/
@@ -64,6 +115,9 @@ pipeline {
                     reuseNode true
                 }
             }
+		when {
+			expression { false == true }
+		}
             steps {    
               script {
                 sh '''
@@ -89,6 +143,7 @@ pipeline {
                     docker version
                     docker build -t ${IMAGE} .
                     docker tag ${IMAGE} ${IMAGE}:${VERSION}
+                    docker run -it ${IMAGE} /bin/bash
                     #docker push ${IMAGE}:${VERSION}
                 '''
                 }
