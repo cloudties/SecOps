@@ -12,7 +12,7 @@
 
 #   Begin is a ubunthu sniper build Dockerfile
 FROM scratch
-ADD ubuntu-focal-core-cloudimg-amd64-root.tar.gz /
+ADD https://partner-images.canonical.com/core/bionic/current/ubuntu-bionic-core-cloudimg-amd64-root.tar.gz /
 
 # a few minor docker-specific tweaks
 # see https://github.com/docker/docker/blob/9a9fc01af8fb5d98b8eec0740716226fadb3735c/contrib/mkimage/debootstrap
