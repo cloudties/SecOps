@@ -1,0 +1,137 @@
+pipeline {
+
+	/*
+	* Run everything on an existing agent configured with a label 'docker'.
+	* This agent will need docker, git and a jdk installed at a minimum.
+	* https://stackoverflow.com/questions/26472586/upgrade-docker-on-centos-7
+	* install latest docker
+	* start docker demon
+	* "chmod 666 /var/run/docker.sock"
+	*/
+	/*
+	* https://xerosecurity.com/wordpress/documentation/
+	*/
+
+    agent {
+        node {
+            label 'master'
+        }
+    }
+    // using the Timestamper plugin we can add timestamps to the console log
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+    environment {
+        //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
+        IMAGE = 'sn1per'
+        VERSION = '1'
+        
+        //Use Pipeline Utility Steps for python env variables
+        //IMAGE = 'simplejavaproject'
+        //VERSION = readMavenPom().getVersion()
+        //VERSION = '2.2.2'
+        
+	//registry = "myreg/docker-test"
+	//imagename = "cloudties/dockerimage"
+	//registryCredential = 'cloudties123$'
+	//dockerImage = ''
+    }
+    
+    stages {
+       stage('Build from DockerFile') {
+             
+             	when {
+	     		expression { true == true }
+	     	}
+
+		agent {
+		    // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
+		    dockerfile {
+			filename 'Dockerfile'
+			dir 'build'
+			label 'my-ubunthu'
+			additionalBuildArgs  '--build-arg version=1.0.2'
+			args '-v /tmp:/tmp'
+		    }
+		}
+              steps {
+		   script {
+			checkout(
+			[
+				$class: 'GitSCM',
+				branches: [
+				[name: '*/master']
+				],
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [
+				[
+				credentialsId: 'cloudties',
+				url: 'https://github.com/cloudties/SimpleJavaProject.git']
+				]
+			])
+                 }}
+        }
+        stage('Build') {
+		 when {
+ 				expression { true == true }
+		}
+ 		options { timeout(time: 30, unit: 'MINUTES') }
+            steps {
+                script {
+                    def commit = checkout scm
+                    // we set BRANCH_NAME to make when { branch } syntax work without multibranch job
+                    env.BRANCH_NAME = commit.GIT_BRANCH.replace('origin/', '')
+
+                    dockerImage = docker.build("${IMAGE}:${VERSION}",
+                        "--label my-ubunthu
+                        + " --build-arg MY_ARG=myArg"
+                        + " ."
+                    )
+                }
+            }
+        }
+        stage('Build docker image') {
+		 when {
+						expression { true == false }
+				}
+		 steps {
+               script {
+                sh '''
+			docker version
+			docker build -t ${IMAGE} .
+			docker tag ${IMAGE} ${IMAGE}:${VERSION}
+			docker run -d ${IMAGE}:${VERSION} /bin/bash
+			#docker push ${IMAGE}:${VERSION}
+                '''
+                }
+            }
+        }
+        stage('Push to docker repository') {
+	            expression { true == false }
+	            options { timeout(time: 5, unit: 'MINUTES') }
+	            steps {
+	                lock("${JOB_NAME}-Push") {
+	                    script {
+	                        docker.withRegistry('https://myrepo:5000', 'docker_registry') {
+	                            dockerImage.push('latest')
+	                        }
+	                    }
+	                    milestone 30
+	                }
+	            }
+        }
+
+        stage('Remove Unused docker image') {
+             steps {
+               script {
+			//sh "docker rmi ${IMAGE}:${VERSION}"
+			//sh "docker rmi ${IMAGE}:latest"
+			sh "docker image ls"
+                }
+            }
+        }
+    }
+}	
