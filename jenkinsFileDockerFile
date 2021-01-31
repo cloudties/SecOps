@@ -39,13 +39,9 @@ pipeline {
     }
     
     stages {
-       stage('Build from DockerFile') {
+       stage('Checkout DockerFile') {
              
-             	when {
-	     		expression { true == true }
-	     	}
-
-		agent {
+ 		agent {
 		    // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
 		    dockerfile {
 			filename 'Dockerfile'
@@ -74,10 +70,7 @@ pipeline {
 			])
                  }}
         }
-        stage('Build') {
-        	when {
- 				expression { true == true }
-		}
+        stage('Build Docker') {
  		options { timeout(time: 30, unit: 'MINUTES') }
            	steps {
                 script {
