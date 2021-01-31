@@ -40,7 +40,6 @@ pipeline {
     
     stages {
        stage('Checkout DockerFile') {
-             
  		agent {
 		    // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 .
 		    dockerfile {
@@ -69,22 +68,6 @@ pipeline {
 				]
 			])
                  }}
-        }
-        stage('Build Docker') {
- 		options { timeout(time: 30, unit: 'MINUTES') }
-           	steps {
-                script {
-                    def commit = checkout scm
-                    // we set BRANCH_NAME to make when { branch } syntax work without multibranch job
-                    env.BRANCH_NAME = commit.GIT_BRANCH.replace('origin/', '')
-
-                    dockerImage = docker.build("${IMAGE}:${VERSION}",
-                        "--label my-ubunthu"
-                        + " --build-arg MY_ARG=myArg"
-                        + " ."
-                    )
-                }
-            }
         }
         stage('Run Python app') {
 	 steps {
