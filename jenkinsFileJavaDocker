@@ -1,0 +1,124 @@
+pipeline {
+
+	/*
+	* Run everything on an existing agent configured with a label 'docker'.
+	* This agent will need docker, git and a jdk installed at a minimum.
+	* https://stackoverflow.com/questions/26472586/upgrade-docker-on-centos-7
+	* install latest docker
+	* start docker demon
+	* "chmod 666 /var/run/docker.sock"
+	*/
+	/*
+	* https://xerosecurity.com/wordpress/documentation/
+	*/
+
+    agent {
+        node {
+            label 'master'
+        }
+    }
+    // using the Timestamper plugin we can add timestamps to the console log
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+    environment {
+        //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
+        IMAGE = 'sn1per'
+        VERSION = '1'
+        
+        //Use Pipeline Utility Steps for python env variables
+        //IMAGE = 'simplejavaproject'
+        //VERSION = readMavenPom().getVersion()
+        //VERSION = '2.2.2'
+        
+	//registry = "myreg/docker-test"
+	//imagename = "cloudties/dockerimage"
+	//registryCredential = 'cloudties123$'
+	//dockerImage = ''
+    }
+    
+    stages {
+       stage('Clone Java repository') {
+              /* 
+             * Let's make sure we have the repository cloned to our workspace 
+             */
+             	when {
+	     		expression { false == true }
+	     	}
+
+              steps {
+		   script {
+			checkout(
+			[
+				$class: 'GitSCM',
+				branches: [
+				[name: '*/master']
+				],
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [
+				[
+				credentialsId: 'cloudties',
+				url: 'https://github.com/cloudties/SimpleJavaProject.git']
+				]
+			])
+                 }}
+        }
+        stage('Maven java build') {
+        	when {
+				expression { false == true }
+		}
+            agent {
+                docker {
+                    /*
+                     * Reuse the workspace on the agent defined at top-level of
+                     * Pipeline but run inside a container.
+                     */
+                    image 'maven:3.6-jdk-8'
+                    reuseNode true
+                }
+            }
+		           steps {    
+              script {
+                sh '''
+                    set -eux pipefail
+                    mvn -e clean install
+                '''
+                }
+            }
+            post {
+                success {
+                /* 
+                 * Only worry about archiving the jar file 
+                 * if the build steps are successful (this part may be not necessary)
+                 */
+                archiveArtifacts(artifacts: '**/target/*.jar', allowEmptyArchive: true)
+                }
+           }
+        }
+        stage('Build docker image') {
+             steps {
+               script {
+                sh '''
+			docker version
+			docker build -t ${IMAGE} .
+			docker tag ${IMAGE} ${IMAGE}:${VERSION}
+			docker run -d ${IMAGE}:${VERSION} /bin/bash
+			#docker push ${IMAGE}:${VERSION}
+                '''
+                }
+            }
+        }
+        stage('Remove Unused docker image') {
+             steps {
+               script {
+			//sh "docker rmi ${IMAGE}:${VERSION}"
+			//sh "docker rmi ${IMAGE}:latest"
+			sh "docker image ls"
+                }
+            }
+        }
+    }
+}	
