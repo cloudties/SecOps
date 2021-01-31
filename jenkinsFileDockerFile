@@ -92,7 +92,7 @@ pipeline {
 			docker version
 			docker image ls
 			docker run -t -d  ${IMAGE}:${VERSION} /bin/bash
-			docker exec -u 0 \$(docker ps | grep sn1per | awk '{print \$1}') /bin/bash  -c 'sniper -t http://192.168.57.150/login'
+			docker exec -u 0 \$(docker ps | grep sn1per | awk '{print \$1}') /bin/bash  -c 'sniper -t https://www.cloudties.in'
                 '''
                 }
             }
