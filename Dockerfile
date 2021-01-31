@@ -11,8 +11,8 @@
 #   End is a java build Dockerfile
 
 #   Begin is a ubunthu sniper build Dockerfile
-FROM scratch
-ADD https://partner-images.canonical.com/core/bionic/current/ubuntu-bionic-core-cloudimg-amd64-root.tar.gz /
+FROM ubuntu:20.04
+#ADD https://partner-images.canonical.com/core/bionic/current/ubuntu-bionic-core-cloudimg-amd64-root.tar.gz /
 
 RUN apt-get install -y vim bash
 
