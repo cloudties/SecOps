@@ -42,10 +42,10 @@ pipeline {
         stage('Remove Unused docker image') {
              steps {
                script {
-		       sh """#!/bin/bash 
+		       sh '''#!/bin/bash 
 		       docker ps  name=$( docker ps  -a |  grep sn1per  | awk '{print $1}') -q | xargs --no-run-if-empty docker container stop
-		       """
-		       sh 'docker container ls -a -fname=\$(docker ps  -a |  grep sn1per | awk '{print $1}') -q | xargs -r docker container rm'
+		       docker container ls -a -fname=\$(docker ps  -a |  grep sn1per | awk '{print $1}') -q | xargs -r docker container rm
+		       '''
 			//sh "docker rmi ${IMAGE}:${VERSION}"
 			//sh "docker rmi ${IMAGE}:latest"
 		       sh "docker image ls"
