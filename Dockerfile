@@ -13,6 +13,7 @@
 #   Begin is a ubunthu sniper build Dockerfile
 FROM ubuntu:20.04
 ENV TZ=Asia/Calcutta
+ENV DEBIAN_FRONTEND=noninteractive
 #ADD https://partner-images.canonical.com/core/bionic/current/ubuntu-bionic-core-cloudimg-amd64-root.tar.gz /
 
 # a few minor docker-specific tweaks
@@ -56,6 +57,9 @@ RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+ENV DEBIAN_FRONTEND=noninteractive
+RUN  set -x \
+     && apt-get -y install tzdata
 
 RUN set -x \
         && apt-get -yqq update \
