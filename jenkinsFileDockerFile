@@ -86,18 +86,13 @@ pipeline {
                 }
             }
         }
-        stage('Build docker image') {
-	when {
-		expression { true == false }
-	}
+        stage('Run Python app') {
 	 steps {
                script {
                 sh '''
 			docker version
-			docker build -t ${IMAGE} .
-			docker tag ${IMAGE} ${IMAGE}:${VERSION}
-			docker run -d ${IMAGE}:${VERSION} /bin/bash
-			#docker push ${IMAGE}:${VERSION}
+			docker image ls
+			docker exec -u 0 \$(docker ps | grep sn1per | awk '{print \$1}') /bin/sh  -c 'sniper -t https://www.cloudties.in'
                 '''
                 }
             }

@@ -12,6 +12,7 @@
 
 #   Begin is a ubunthu sniper build Dockerfile
 FROM ubuntu:20.04
+ENV TZ=Asia/Calcutta
 #ADD https://partner-images.canonical.com/core/bionic/current/ubuntu-bionic-core-cloudimg-amd64-root.tar.gz /
 
 # a few minor docker-specific tweaks
@@ -52,6 +53,9 @@ RUN [ -z "$(apt-get indextargets)" ]
 # make systemd-detect-virt return "docker"
 # See: https://github.com/systemd/systemd/blob/aa0c34279ee40bce2f9681b496922dedbadfca19/src/basic/virt.c#L434
 RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 
 RUN set -x \
         && apt-get -yqq update \
