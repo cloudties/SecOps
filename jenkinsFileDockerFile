@@ -37,88 +37,11 @@ pipeline {
 	//registryCredential = 'cloudties123$'
 	//dockerImage = ''
     }
-    
-    stages {
-       stage('Checkout DockerFile') {
- 		agent {
-		    // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 .
-		    dockerfile {
-			filename 'Dockerfile'
-			dir '.'
-			label 'master'
-			additionalBuildArgs  '--build-arg version=1.0.2'
-			args '-v /tmp:/tmp'
-		    }
-		}
-              steps {
-		   script {
-			checkout(
-			[
-				$class: 'GitSCM',
-				branches: [
-				[name: '*/master']
-				],
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [], 
-				submoduleCfg: [], 
-				userRemoteConfigs: [
-				[
-				credentialsId: 'cloudties',
-				url: 'https://github.com/cloudties/SecOps.git']
-				]
-			])
-                 }}
-        }
-        stage('Build Docker') {
- 		options { timeout(time: 30, unit: 'MINUTES') }
-           	steps {
-                script {
-                    def commit = checkout scm
-                    // we set BRANCH_NAME to make when { branch } syntax work without multibranch job
-                    env.BRANCH_NAME = commit.GIT_BRANCH.replace('origin/', '')
-
-                    dockerImage = docker.build("${IMAGE}:${VERSION}",
-                        "--label my-ubunthu"
-                        + " --build-arg MY_ARG=myArg"
-                        + " ."
-                    )
-                }
-            }
-        }
-        stage('Run Python app') {
-	 steps {
-               script {
-                sh '''
-			docker version
-			docker image ls
-			docker run -t -d  ${IMAGE}:${VERSION} /bin/bash
-			docker exec -u 0 \$(docker ps | grep sn1per | awk '{print \$1}') /bin/bash  -c 'sniper -t https://www.cloudties.in'
-                '''
-                }
-            }
-        }
-        stage('Push to docker repository') 
-        {
-			when {
-				expression { true == false }
-			}
-	            options { timeout(time: 5, unit: 'MINUTES') }
-	            steps {
-	                lock("${JOB_NAME}-Push") {
-	                    script {
-	                        docker.withRegistry('https://myrepo:5000', 'docker_registry') {
-	                            dockerImage.push('latest')
-	                        }
-	                    }
-	                    milestone 30
-	                }
-	            }
-        }
 
         stage('Remove Unused docker image') {
              steps {
                script {
-		       sh 'docker ps  name=\$( docker ps  -a |  grep sn1per  | awk '{print $1}') -q | xargs --no-run-if-empty docker container stop'
+		       sh 'docker ps  name=$( docker ps  -a |  grep sn1per  | awk '{print $1}') -q | xargs --no-run-if-empty docker container stop'
 		       sh 'docker container ls -a -fname=\$(docker ps  -a |  grep sn1per | awk '{print $1}') -q | xargs -r docker container rm'
 			//sh "docker rmi ${IMAGE}:${VERSION}"
 			//sh "docker rmi ${IMAGE}:latest"
