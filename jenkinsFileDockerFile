@@ -75,7 +75,7 @@ pipeline {
                  }}
         }
         stage('Build') {
-		 when {
+ when {
  				expression { true == true }
 		}
  		options { timeout(time: 30, unit: 'MINUTES') }
@@ -86,7 +86,7 @@ pipeline {
                     env.BRANCH_NAME = commit.GIT_BRANCH.replace('origin/', '')
 
                     dockerImage = docker.build("${IMAGE}:${VERSION}",
-                        "--label my-ubunthu
+                        "--label my-ubunthu"
                         + " --build-arg MY_ARG=myArg"
                         + " ."
                     )
@@ -94,10 +94,10 @@ pipeline {
             }
         }
         stage('Build docker image') {
-		 when {
-						expression { true == false }
-				}
-		 steps {
+ when {
+ 				expression { true == false }
+		}
+ steps {
                script {
                 sh '''
 			docker version
