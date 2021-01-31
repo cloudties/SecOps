@@ -58,9 +58,6 @@ RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN  set -x \
-     && apt-get -y install tzdata
-
 RUN set -x \
         && apt-get -yqq update \
         && apt-get -yqq dist-upgrade \
