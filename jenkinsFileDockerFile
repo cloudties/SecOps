@@ -69,6 +69,22 @@ pipeline {
 			])
                  }}
         }
+        stage('Build Docker') {
+ 		options { timeout(time: 30, unit: 'MINUTES') }
+           	steps {
+                script {
+                    def commit = checkout scm
+                    // we set BRANCH_NAME to make when { branch } syntax work without multibranch job
+                    env.BRANCH_NAME = commit.GIT_BRANCH.replace('origin/', '')
+
+                    dockerImage = docker.build("${IMAGE}:${VERSION}",
+                        "--label my-ubunthu"
+                        + " --build-arg MY_ARG=myArg"
+                        + " ."
+                    )
+                }
+            }
+        }
         stage('Run Python app') {
 	 steps {
                script {
@@ -76,7 +92,7 @@ pipeline {
 			docker version
 			docker image ls
 			docker run -t -d  ${IMAGE}:${VERSION} /bin/bash
-			docker exec -u 0 \$(docker ps | grep sn1per | awk '{print \$1}') /bin/bash  -c 'sniper -t https://www.cloudties.in'
+			docker exec -u 0 \$(docker ps | grep sn1per | awk '{print \$1}') /bin/bash  -c 'sniper -t http://192.168.57.150/login'
                 '''
                 }
             }
