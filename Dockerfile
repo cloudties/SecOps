@@ -57,13 +57,16 @@ RUN set -x \
         && apt-get -yqq update \
         && apt-get -yqq dist-upgrade \
         && apt-get clean
-RUN apt-get install -y metasploit-framework
+RUN  set -x \ 
+	&&apt-get install -y metasploit-framework
 
-RUN sed -i 's/systemctl status ${PG_SERVICE}/service ${PG_SERVICE} status/g' /usr/bin/msfdb && \
-    service postgresql start && \
-    msfdb reinit
+RUN set -x \ 
+    && sed -i 's/systemctl status ${PG_SERVICE}/service ${PG_SERVICE} status/g' /usr/bin/msfdb \
+    && service postgresql start \
+    && msfdb reinit
 
-RUN apt-get --yes install git \
+RUN set -x \
+    && apt-get --yes install git \
     && mkdir -p security \
     && cd security \
     && git clone https://github.com/1N3/Sn1per.git \
