@@ -38,47 +38,47 @@ pipeline {
 	//dockerImage = ''
     }
     stages {
-    	 stage('parallel run') {    	
+	 stage('parallel run') 
+	 {    	
 	    parallel {
-     		stage('par 1') {
-                    agent {
-                        label "master"
-                    }
-                    steps {
-                           script {
+		stage('par 1') {
+		    agent {
+			label "master"
+		    }
+		    steps {
+			   script {
 			    sh '''
 			    docker version
 			    '''
 			}
-                    }
-                    post {
-                        always {
-                             echo "post"
-                        }
-                    }
-                }
-                stage('par 2') {
-                    agent {
-                        label "master"
-                    }
-                    steps {
-                                                
-						    script {
-						    sh '''
-						    docker version
-						    '''
-						}
-
-                    }
-                    post {
-                        always {
-                            echo "post 2"
-                        }
-                    }
-                }	    
-			
+		    }
+		    post {
+			always {
+			     echo "post"
+			}
+		    }
 		}
-	    }	   
+		stage('par 2') {
+		    agent {
+			label "master"
+		    }
+		    steps {
+
+			    script {
+			    sh '''
+			    docker image ls
+			    '''
+			}
+
+		    }
+		    post {
+			always {
+			    echo "post 2"
+			}
+		    }
+		}	    
+
+	    }
 	}
        stage('Clone Java repository') {
               /* 
