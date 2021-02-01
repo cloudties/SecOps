@@ -39,6 +39,35 @@ pipeline {
     }
     
     stages {
+    	 stage('parallel rung') {
+	    parallel 'static': {
+		steps {
+			    script {
+			    sh '''
+			    docker version
+			    '''
+			}
+		}
+	    },
+	    'unit': {
+		steps {
+			    script {
+			    sh '''
+			    docker image ls
+			    '''
+			}
+		}
+	    },
+	    'integration': {
+		steps {
+			    script {
+			    sh '''
+			    docker container ls
+			    '''
+			}
+		}
+	}
+	}
        stage('Clone Java repository') {
               /* 
              * Let's make sure we have the repository cloned to our workspace 
