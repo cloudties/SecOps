@@ -37,9 +37,9 @@ pipeline {
 	//registryCredential = 'cloudties123$'
 	//dockerImage = ''
     }
-    
     stages {
-    	 stage('parallel rung') {
+    	 stage('parallel run') {
+    	 stages {
 	    parallel 'static': {
 		steps {
 			    script {
@@ -66,7 +66,8 @@ pipeline {
 			    '''
 			}
 		}
-	}
+	    }
+	   }
 	}
        stage('Clone Java repository') {
               /* 
