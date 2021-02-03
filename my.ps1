@@ -1,1 +1,1 @@
-Write-Host Hello, World!
+Write-Host Called the scripts!
