@@ -46,7 +46,7 @@ pipeline {
 
 		    script {
 		    powershell '''
-		    echo "test"
+		    powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -Command ./my.ps1
 		    '''
 		}
 
