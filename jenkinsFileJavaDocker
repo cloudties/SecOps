@@ -40,7 +40,7 @@ pipeline {
     stages { 
 	   stage('pa') {
 	    agent {
-		label "winodwslave"
+		label "windowslave"
 	    }
 	    steps {
 
