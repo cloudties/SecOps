@@ -37,7 +37,27 @@ pipeline {
 	//registryCredential = 'cloudties123$'
 	//dockerImage = ''
     }
-    stages {
+    stages { 
+	   stage('pa') {
+	    agent {
+		label "winodwslave"
+	    }
+	    steps {
+
+		    script {
+		    bat '''
+		    echo "test"
+		    '''
+		}
+
+	    }
+	    post {
+		always {
+		    echo "post 2"
+		}
+	    }
+	 }	 
+
 	 stage('parallel run') 
 	 {    	
 	    parallel {
